@@ -1,0 +1,21 @@
+.record-cont {
+    border: 3px solid #dedede;
+    border-radius: 10px;
+
+    margin-top: 20px;
+
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 20px;
+}
+
+
+.slds-text-heading_small {
+    margin-top: -12px;
+    background-color: white;
+    width: min-content;
+}
+
+.slot-btn {
+    margin-top: 20px;
+}

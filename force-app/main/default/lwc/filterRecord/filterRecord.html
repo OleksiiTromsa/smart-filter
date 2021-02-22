@@ -1,0 +1,19 @@
+<!-- Filter Record -->
+<template>
+    <div class='cont'>
+        <lightning-card title={recordName}>
+            <template for:each={fields} for:item='field'>
+                <lightning-input key={field} type='text' label={field} onchange={fieldChanged}></lightning-input>
+            </template>
+
+            <div class='slot-btn'>
+                <slot name='button'></slot>
+            </div>
+
+            <div class={slotTitleClass}>
+                <p class='slds-text-heading_small'>{relText}</p>
+                <slot onslotchange={handleSlotChange}></slot>
+            </div>
+        </lightning-card>
+    </div>
+</template>

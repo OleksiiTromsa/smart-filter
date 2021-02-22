@@ -1,0 +1,13 @@
+.column {
+    float: left;
+    /*padding: 10px;*/
+}
+
+.left {
+    width: 33%;
+}
+
+.right {
+    padding-left: 20px;
+    width: 67%;
+}

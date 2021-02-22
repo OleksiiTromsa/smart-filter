@@ -1,0 +1,18 @@
+<!-- Filter List -->
+<template>
+
+    <lightning-card>
+        <div if:true={res.data} style="height: 300px;">
+            <lightning-datatable
+                    key-field="id"
+                    data={res.data}
+                    columns={columns}>
+            </lightning-datatable>
+        </div>
+
+        <div if:false={res.data}>
+            No data
+        </div>
+    </lightning-card>
+
+</template>

@@ -1,0 +1,28 @@
+<!-- Schema Field Lookup -->
+<template>
+    <!--  <lightning-input type="checkbox" label="Is Relationship" onchange={handleCheckboxChange}></lightning-input>-->
+    <template if:false={isRelationship}>
+        <lightning-combobox
+                data-name="field"
+                label="Fields"
+                onchange={onChange}
+                options={fieldOptions}></lightning-combobox>
+    </template>
+
+    <template if:true={isRelationship}>
+        <lightning-combobox
+                label="Relationships"
+                data-name="relationship"
+                onchange={onRelationshipChange}
+                options={childOptions}></lightning-combobox>
+        <lightning-combobox
+                if:true={childRelationOptions}
+                label="Child Fields"
+                data-name="relationshipField"
+                onchange={onChange}
+                options={childRelationOptions}></lightning-combobox>
+    </template>
+
+    <lightning-button label="Add" onclick={addField}></lightning-button>
+
+</template>
