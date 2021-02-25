@@ -1,4 +1,4 @@
-import {LightningElement} from 'lwc';
+import {LightningElement, track} from 'lwc';
 import buildQuery from "@salesforce/apex/Builder.buildQueryWithFilters"
 
 export default class FilterAccounts extends LightningElement {
@@ -8,7 +8,13 @@ export default class FilterAccounts extends LightningElement {
     mainFilter = {};
     relatedFilters = [];
 
-    mainFields = 'Name,Phone';
+    @track
+    mainFields = [
+            // {label: 'Name', type: 'text', isCheckbox: false, isPicklist: false},
+            // {label: 'Phone', type: 'text', isCheckbox: false, isPicklist: false}
+            {label: 'Name', isText: 'true', isCheckbox: false, isPicklist: false},
+            {label: 'Phone', isText: 'true', isCheckbox: false, isPicklist: false}
+        ];
 
     relatedConfig = [
         {
@@ -64,7 +70,10 @@ export default class FilterAccounts extends LightningElement {
     isRel;
     promptAddField(e) {
         console.log(e);
+        console.log(e.target.dataset);
+        console.log(e.target.dataset.rel);
         this.isRel = 'true' === e.target.dataset.rel;
+        console.log(e.target.dataset.rel);
 
         this.isModalOpen = true;
 
@@ -79,12 +88,37 @@ export default class FilterAccounts extends LightningElement {
 
 
     modalSubmitted(e) {
-        console.log(e.detail.filterField);
+        console.log('modalSubmitted');
+        console.log(e.detail.fieldType);
+        console.log(e.detail.picklistValues);
 
         if(e.detail.isRelation) {
 
         } else {
-            this.mainFields = this.mainFields + ',' + e.detail.filterField;
+            // this.mainFields = this.mainFields + ',' + e.detail.filterField;
+            // let field = {label: e.detail.filterField};
+            console.log('detail.type');
+            console.log(e.detail.fieldType);
+            if (e.detail.fieldType === 'BOOLEAN') {
+                this.mainFields.push({label: e.detail.filterField, isText: false, isCheckbox: true, isPicklist: false});
+            } else if (e.detail.fieldType === 'PICKLIST') {
+                let plv = [];
+                e.detail.picklistValues.forEach( a => plv.push({label: a.toString(), value: a.toString()}))
+                console.log('plv');
+                console.log(plv);
+                this.mainFields.push({label: e.detail.filterField, isText: false, isCheckbox: false, isPicklist: true, picklistValues: plv});
+            } else {
+                this.mainFields.push({label: e.detail.filterField, isText: true, isCheckbox: false, isPicklist: false});
+            }
+            console.log('mainfields');
+            console.log(this.mainFields);
+            // this.mainFields.push(field);
+            // this.mainFields.push({label: e.detail.filterField, type: 'checkbox'});
+
+            // this.mainFields = [
+            //     {label: 'Name', type: 'TEXT'},
+            //     {label: 'Phone', type: 'TEXT'}
+            // ];
         }
     }
 }

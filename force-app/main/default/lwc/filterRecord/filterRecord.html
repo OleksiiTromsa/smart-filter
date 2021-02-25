@@ -3,8 +3,21 @@
     <div class='cont'>
         <lightning-card title={recordName}>
             <template for:each={fields} for:item='field'>
-                <lightning-input key={field} type='text' label={field} onchange={fieldChanged}></lightning-input>
+
+                <template if:true={field.isCheckbox}>
+                    <lightning-input key={field.label} type='checkbox' label={field.label} onchange={checkboxChanged}></lightning-input>
+                </template>
+
+                <template if:true={field.isPicklist}>
+                    <lightning-combobox key={field.label} label={field.label} options={field.picklistValues} onchange={comboboxChanged}></lightning-combobox>
+                </template>
+
+                <template if:true={field.isText}>
+                    <lightning-input key={field.label} type='text' label={field.label} onchange={fieldChanged}></lightning-input>
+                </template>
+
             </template>
+
 
             <div class='slot-btn'>
                 <slot name='button'></slot>

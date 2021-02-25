@@ -11,14 +11,20 @@ export default class SchemaFieldLookup extends LightningElement {
   @track childRelationOptions;
   fieldsResponse;
   childResponse;
+
+
   @wire(getFields, {sobjectName: '$sobjectName'})
   setFields({error, data}) {
     this.fieldsResponse = {error, data};
     if (data) {
       this.fieldOptions = this.processFields(data);
+      console.log('setFields');
+      console.log(data);
+      console.log(this.fieldOptions);
       console.log([...this.fieldOptions]);
     }
   }
+
   @wire(getChildRelationships, {sobjectName: '$sobjectName'})
   childRelationships({error, data}) {
     this.childResponse = {error, data};
@@ -35,12 +41,32 @@ export default class SchemaFieldLookup extends LightningElement {
   handleCheckboxChange(event) {
     this.isRelationship = event.target.checked;
   }
+
   field;
   relationship;
   relationshipField;
   onChange(event) {
     this[event.target.dataset.name] = event.target.value;
     console.log(event.target.dataset.name, event.target.value);
+
+    console.log('onChange');
+    let val = event.target.value;
+    console.log(val);
+    if(this.fieldOptions && event && event.target) {
+      // console.log('here');
+      // console.log(this.fieldOptions.find(e => e.value === val).type);
+      // console.log(JSON.stringify(this.fieldOptions.find(e => e.value === val)));
+
+      let chosenOption = this.fieldOptions.find(e => e.value === val);
+      // console.log(this.fieldOptions.find(e => e.value === val).picklistValues);
+
+      this['type'] = chosenOption.type;
+      this['picklistValues'] = chosenOption.picklistValues.slice();
+      // console.log(chosenOption);
+      console.log(this.type);
+      console.log(this.picklistValues);
+    }
+
   }
 
   async onRelationshipChange(event) {
@@ -50,10 +76,17 @@ export default class SchemaFieldLookup extends LightningElement {
   }
 
   processFields(data) {
+    console.log('processFields');
+    console.log(data);
     return data.map((_, index) => Object.assign({
+
       label: _.label,
-      value: _.name
+      value: _.name,
+      type: _.type,
+      picklistValues: _.picklistValues
     }));
+
+
   }
 
   addField() {
@@ -67,8 +100,10 @@ export default class SchemaFieldLookup extends LightningElement {
       response.sobjectName = this.relationship;
     } else {
       response.filterField = this.field;
+      response.fieldType = this.type;
+      response.picklistValues = this.picklistValues.slice();
     }
-
+    console.log('addFieldResponse:')
     console.log(response);
 
     this.dispatchEvent(new CustomEvent('submit', {
