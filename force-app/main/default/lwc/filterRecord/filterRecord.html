@@ -9,7 +9,7 @@
                 </template>
 
                 <template if:true={field.isPicklist}>
-                    <lightning-combobox key={field.label} label={field.label} options={field.picklistValues} onchange={comboboxChanged}></lightning-combobox>
+                    <lightning-combobox key={field.label} label={field.label} options={field.picklistValues} onchange={fieldChanged}></lightning-combobox>
                 </template>
 
                 <template if:true={field.isText}>

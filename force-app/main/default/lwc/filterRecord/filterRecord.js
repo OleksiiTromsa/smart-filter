@@ -52,15 +52,6 @@ export default class FilterRecord extends LightningElement {
         this.dispatch();
     }
 
-    // @track selectedLabel;
-    comboboxChanged(e) {
-        // this.selectedLabel = e.detail.value;
-        console.log(this.selectedLabel);
-        console.log(e.target.label);
-        this.saveState(e.target.label, e.target.value);
-
-        this.dispatch();
-    }
 
 
     dispatch() {
