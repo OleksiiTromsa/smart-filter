@@ -99,7 +99,7 @@ export default class FilterAccounts extends LightningElement {
             console.log(JSON.stringify(this.relatedConfig));
 
             if (this.relatedConfig.find(_ => _.name === e.detail.sobjectName)) {
-                this.relatedConfig.fields.push({label: e.detail.filterField, isText: 'true', isCheckbox: false, isPicklist: false});
+                this.relatedConfig.find(_ => _.name === e.detail.sobjectName).fields.push({label: e.detail.filterField, isText: 'true', isCheckbox: false, isPicklist: false});
             } else {
                 this.relatedConfig.push({name: e.detail.sobjectName, lookup: e.detail.relatedField,
                     fields: [{label: e.detail.filterField, isText: 'true', isCheckbox: false, isPicklist: false}]});
