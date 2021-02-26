@@ -22,10 +22,11 @@
                                      lookup-field-name={related.lookup}
                                      onchanged={relatedFilterChanged}>
                         <lightning-button slot='button' icon-name='utility:add' label='Add Field'
-                                          data-rel='false'
+                                          data-rel='false' data-sobject={related.name}
                                           onclick={promptAddField}></lightning-button>
                     </c-filter-record>
                 </template>
+
 
                 <!--                <c-filter-record record-name='Contact' fields='LastName,Phone' lookup-field-name='AccountId'-->
                 <!--                                 onchanged={relatedFilterChanged}></c-filter-record>-->
@@ -70,7 +71,7 @@
                     <!--                    </b></p>-->
                     <!--                </div>-->
 
-                    <c-schema-field-lookup sobject-name='Account' is-relationship={isRel} onsubmit={modalSubmitted}></c-schema-field-lookup>
+                    <c-schema-field-lookup sobject-name={sobjectName} is-relationship={isRel} onsubmit={modalSubmitted}></c-schema-field-lookup>
                 </div>
                 <!-- Modal/Popup Box LWC footer starts here -->
                 <footer class="slds-modal__footer">

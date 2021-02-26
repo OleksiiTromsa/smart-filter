@@ -1,4 +1,4 @@
-import {LightningElement} from 'lwc';
+import {LightningElement, track} from 'lwc';
 import buildQuery from "@salesforce/apex/Builder.buildQueryWithFilters"
 
 export default class FilterAccounts extends LightningElement {
@@ -8,18 +8,24 @@ export default class FilterAccounts extends LightningElement {
     mainFilter = {};
     relatedFilters = [];
 
-    mainFields = 'Name,Phone';
+    @track
+    mainFields = [
+            {label: 'Name', isText: 'true', isCheckbox: false, isPicklist: false},
+            {label: 'Phone', isText: 'true', isCheckbox: false, isPicklist: false}
+        ];
 
     relatedConfig = [
         {
             name: 'Contact',
             lookup: 'AccountId',
-            fields: 'LastName,Phone'
+            fields: [{label: 'LastName', isText: 'true', isCheckbox: false, isPicklist: false},
+                {label: 'Phone', isText: 'true', isCheckbox: false, isPicklist: false}]
         },
         {
             name: 'Opportunity',
             lookup: 'AccountId',
-            fields: 'Amount,StageName'
+            fields: [{label: 'Amount', isText: 'true', isCheckbox: false, isPicklist: false},
+                {label: 'StageName', isText: 'true', isCheckbox: false, isPicklist: false}]
         }
     ];
 
@@ -60,14 +66,21 @@ export default class FilterAccounts extends LightningElement {
         this.dispatchEvent(new CustomEvent('querychanged', {detail: this.query}));
     }
 
+    sobjectName;
     isModalOpen;
     isRel;
     promptAddField(e) {
-        console.log(e);
+        console.log('promptAddField');
+
         this.isRel = 'true' === e.target.dataset.rel;
 
-        this.isModalOpen = true;
+        if(e.target.dataset.sobject) {
+            this.sobjectName = e.target.dataset.sobject;
+        } else {
+            this.sobjectName = 'Account';
+        }
 
+        this.isModalOpen = true;
     }
 
     closeModal(){
@@ -79,12 +92,45 @@ export default class FilterAccounts extends LightningElement {
 
 
     modalSubmitted(e) {
-        console.log(e.detail.filterField);
+        console.log('modalSubmitted');
 
         if(e.detail.isRelation) {
+            console.log(JSON.stringify(this.relatedConfig));
+
+            if (this.relatedConfig.find(_ => _.name === e.detail.sobjectName)) {
+                this.relatedConfig.find(_ => _.name === e.detail.sobjectName)
+                  .fields.push({label: e.detail.filterField, isText: 'true', isCheckbox: false, isPicklist: false});
+            } else {
+                this.relatedConfig.push({name: e.detail.sobjectName, lookup: e.detail.relatedField,
+                    fields: [{label: e.detail.filterField, isText: 'true', isCheckbox: false, isPicklist: false}]});
+            }
+            console.log(JSON.stringify(this.relatedConfig));
 
         } else {
-            this.mainFields = this.mainFields + ',' + e.detail.filterField;
+            if (e.detail.fieldType === 'BOOLEAN') {
+                if (this.sobjectName === 'Account') {
+                    this.mainFields.push({label: e.detail.filterField, isText: false, isCheckbox: true, isPicklist: false});
+                } else {
+                    this.relatedConfig.find(_ => _.name === this.sobjectName)
+                      .fields.push({label: e.detail.filterField, isText: false, isCheckbox: true, isPicklist: false});
+                }
+            } else if (e.detail.fieldType === 'PICKLIST') {
+                let plv = [];
+                e.detail.picklistValues.forEach( a => plv.push({label: a.toString(), value: a.toString()}))
+                if (this.sobjectName === 'Account') {
+                    this.mainFields.push({label: e.detail.filterField, isText: false, isCheckbox: false, isPicklist: true, picklistValues: plv});
+                } else {
+                    this.relatedConfig.find(_ => _.name === this.sobjectName)
+                      .fields.push({label: e.detail.filterField, isText: false, isCheckbox: false, isPicklist: true, picklistValues: plv});
+                }
+            } else {
+                if (this.sobjectName === 'Account') {
+                    this.mainFields.push({label: e.detail.filterField, isText: true, isCheckbox: false, isPicklist: false});
+                } else {
+                    this.relatedConfig.find(_ => _.name === this.sobjectName)
+                      .fields.push({label: e.detail.filterField, isText: true, isCheckbox: false, isPicklist: false});
+                }
+            }
         }
     }
 }

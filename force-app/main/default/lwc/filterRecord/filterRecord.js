@@ -1,4 +1,4 @@
-import {LightningElement, api} from 'lwc';
+import {LightningElement, api, track} from 'lwc';
 
 export default class FilterRecord extends LightningElement {
     slotTitleClass;
@@ -9,9 +9,8 @@ export default class FilterRecord extends LightningElement {
 
     _fields;
 
-
     @api set fields(v) {
-        this._fields = v.split(',');
+        this._fields = v;//.split(',');
     }
 
     get fields() {
@@ -32,8 +31,22 @@ export default class FilterRecord extends LightningElement {
 
     fieldChanged(e) {
         // todo get field name from e
+        console.log('fieldChanged');
+        console.log(e.target.label);
+        console.log(e.target.value);
+        // this[e.target.dataset.name] = e.target.value;
 
         this.saveState(e.target.label, e.target.value);
+
+        this.dispatch();
+    }
+
+    checkboxChanged(e) {
+        console.log(e.target.label);
+        console.log(e.target.checked);
+        // console.log(JSON.stringify(e.target));
+
+        this.saveState(e.target.label, e.target.checked);
 
         this.dispatch();
     }
@@ -51,5 +64,4 @@ export default class FilterRecord extends LightningElement {
         this.slotTitleClass = hasTitle ? 'record-cont' : '';
         this.relText = hasTitle ? 'Related' : '';
     }
-
 }
