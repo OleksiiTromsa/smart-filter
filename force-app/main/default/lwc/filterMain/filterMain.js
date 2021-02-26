@@ -10,8 +10,6 @@ export default class FilterAccounts extends LightningElement {
 
     @track
     mainFields = [
-            // {label: 'Name', type: 'text', isCheckbox: false, isPicklist: false},
-            // {label: 'Phone', type: 'text', isCheckbox: false, isPicklist: false}
             {label: 'Name', isText: 'true', isCheckbox: false, isPicklist: false},
             {label: 'Phone', isText: 'true', isCheckbox: false, isPicklist: false}
         ];
@@ -20,12 +18,14 @@ export default class FilterAccounts extends LightningElement {
         {
             name: 'Contact',
             lookup: 'AccountId',
-            fields: 'LastName,Phone'
+            fields: [{label: 'LastName', isText: 'true', isCheckbox: false, isPicklist: false},
+                {label: 'Phone', isText: 'true', isCheckbox: false, isPicklist: false}]
         },
         {
             name: 'Opportunity',
             lookup: 'AccountId',
-            fields: 'Amount,StageName'
+            fields: [{label: 'Amount', isText: 'true', isCheckbox: false, isPicklist: false},
+                {label: 'StageName', isText: 'true', isCheckbox: false, isPicklist: false}]
         }
     ];
 
@@ -66,6 +66,7 @@ export default class FilterAccounts extends LightningElement {
         this.dispatchEvent(new CustomEvent('querychanged', {detail: this.query}));
     }
 
+    // sObjectType;
     isModalOpen;
     isRel;
     promptAddField(e) {
@@ -73,10 +74,12 @@ export default class FilterAccounts extends LightningElement {
         console.log(e.target.dataset);
         console.log(e.target.dataset.rel);
         this.isRel = 'true' === e.target.dataset.rel;
-        console.log(e.target.dataset.rel);
+
+        // this.sObjectType = e.target.related.name;
+
+        console.log(this.sObjectType);
 
         this.isModalOpen = true;
-
     }
 
     closeModal(){
@@ -89,10 +92,19 @@ export default class FilterAccounts extends LightningElement {
 
     modalSubmitted(e) {
         console.log('modalSubmitted');
-        console.log(e.detail.fieldType);
-        console.log(e.detail.picklistValues);
+        // console.log(e.detail.fieldType);
+        // console.log(e.detail.picklistValues);
 
         if(e.detail.isRelation) {
+            console.log(JSON.stringify(this.relatedConfig));
+
+            if (this.relatedConfig.find(_ => _.name === e.detail.sobjectName)) {
+                this.relatedConfig.fields.push({label: e.detail.filterField, isText: 'true', isCheckbox: false, isPicklist: false});
+            } else {
+                this.relatedConfig.push({name: e.detail.sobjectName, lookup: e.detail.relatedField,
+                    fields: [{label: e.detail.filterField, isText: 'true', isCheckbox: false, isPicklist: false}]});
+            }
+            console.log(JSON.stringify(this.relatedConfig));
 
         } else {
             // this.mainFields = this.mainFields + ',' + e.detail.filterField;
@@ -115,10 +127,6 @@ export default class FilterAccounts extends LightningElement {
             // this.mainFields.push(field);
             // this.mainFields.push({label: e.detail.filterField, type: 'checkbox'});
 
-            // this.mainFields = [
-            //     {label: 'Name', type: 'TEXT'},
-            //     {label: 'Phone', type: 'TEXT'}
-            // ];
         }
     }
 }

@@ -38,6 +38,7 @@ export default class SchemaFieldLookup extends LightningElement {
     }
   }
 
+
   handleCheckboxChange(event) {
     this.isRelationship = event.target.checked;
   }
@@ -52,21 +53,20 @@ export default class SchemaFieldLookup extends LightningElement {
     console.log('onChange');
     let val = event.target.value;
     console.log(val);
-    if(this.fieldOptions && event && event.target) {
+    // if(this.fieldOptions && event && event.target) {
+
       // console.log('here');
       // console.log(this.fieldOptions.find(e => e.value === val).type);
       // console.log(JSON.stringify(this.fieldOptions.find(e => e.value === val)));
 
-      let chosenOption = this.fieldOptions.find(e => e.value === val);
-      // console.log(this.fieldOptions.find(e => e.value === val).picklistValues);
 
-      this['type'] = chosenOption.type;
-      this['picklistValues'] = chosenOption.picklistValues.slice();
-      // console.log(chosenOption);
-      console.log(this.type);
-      console.log(this.picklistValues);
-    }
 
+      if (!this.isRelationship) {
+        let chosenOption = this.fieldOptions.find(e => e.value === val);
+        this['type'] = chosenOption.type;
+        this['picklistValues'] = chosenOption.picklistValues.slice();
+      }
+    // }
   }
 
   async onRelationshipChange(event) {
@@ -86,18 +86,23 @@ export default class SchemaFieldLookup extends LightningElement {
       picklistValues: _.picklistValues
     }));
 
-
   }
 
   addField() {
+    console.log('Add field');
     const response = {
       isRelation: this.isRelationship
     };
 
     if (this.isRelationship) {
+
       response.filterField = this.relationshipField;
       response.relatedField = this.childResponse.data.find(_ => _.sobjectName === this.relationship).relatedFieldName;
       response.sobjectName = this.relationship;
+      console.log(this.relationshipField + ' ' + this.relationship);
+      console.log(JSON.stringify(this.childResponse));
+      console.log(JSON.stringify(this.childOptions));
+      console.log(JSON.stringify(this.childRelationOptions));
     } else {
       response.filterField = this.field;
       response.fieldType = this.type;
