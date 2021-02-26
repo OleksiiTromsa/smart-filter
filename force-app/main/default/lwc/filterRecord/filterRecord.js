@@ -9,7 +9,6 @@ export default class FilterRecord extends LightningElement {
 
     _fields;
 
-
     @api set fields(v) {
         this._fields = v;//.split(',');
     }
@@ -52,8 +51,6 @@ export default class FilterRecord extends LightningElement {
         this.dispatch();
     }
 
-
-
     dispatch() {
         const state = this.getState();
         this.dispatchEvent(new CustomEvent('changed', {detail: state}));
@@ -67,8 +64,4 @@ export default class FilterRecord extends LightningElement {
         this.slotTitleClass = hasTitle ? 'record-cont' : '';
         this.relText = hasTitle ? 'Related' : '';
     }
-
-
-
-
 }

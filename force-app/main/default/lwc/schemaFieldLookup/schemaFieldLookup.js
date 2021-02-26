@@ -3,7 +3,8 @@ import getFields from '@salesforce/apex/DynamicLookupApi.getFieldsInfo';
 import getChildRelationships from '@salesforce/apex/DynamicLookupApi.getChildRelationships';
 export default class SchemaFieldLookup extends LightningElement {
 
-  @api sobjectName = 'Account';
+  // @api sobjectName = 'Account';
+  @api sobjectName;
   @api isRelationship;
 
   @track fieldOptions;
@@ -11,7 +12,6 @@ export default class SchemaFieldLookup extends LightningElement {
   @track childRelationOptions;
   fieldsResponse;
   childResponse;
-
 
   @wire(getFields, {sobjectName: '$sobjectName'})
   setFields({error, data}) {
@@ -47,20 +47,12 @@ export default class SchemaFieldLookup extends LightningElement {
   relationship;
   relationshipField;
   onChange(event) {
-    this[event.target.dataset.name] = event.target.value;
-    console.log(event.target.dataset.name, event.target.value);
-
     console.log('onChange');
+    this[event.target.dataset.name] = event.target.value;
+
     let val = event.target.value;
     console.log(val);
     // if(this.fieldOptions && event && event.target) {
-
-      // console.log('here');
-      // console.log(this.fieldOptions.find(e => e.value === val).type);
-      // console.log(JSON.stringify(this.fieldOptions.find(e => e.value === val)));
-
-
-
       if (!this.isRelationship) {
         let chosenOption = this.fieldOptions.find(e => e.value === val);
         this['type'] = chosenOption.type;
@@ -99,10 +91,6 @@ export default class SchemaFieldLookup extends LightningElement {
       response.filterField = this.relationshipField;
       response.relatedField = this.childResponse.data.find(_ => _.sobjectName === this.relationship).relatedFieldName;
       response.sobjectName = this.relationship;
-      console.log(this.relationshipField + ' ' + this.relationship);
-      console.log(JSON.stringify(this.childResponse));
-      console.log(JSON.stringify(this.childOptions));
-      console.log(JSON.stringify(this.childRelationOptions));
     } else {
       response.filterField = this.field;
       response.fieldType = this.type;

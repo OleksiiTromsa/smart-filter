@@ -66,18 +66,19 @@ export default class FilterAccounts extends LightningElement {
         this.dispatchEvent(new CustomEvent('querychanged', {detail: this.query}));
     }
 
-    // sObjectType;
+    sobjectName;
     isModalOpen;
     isRel;
     promptAddField(e) {
-        console.log(e);
-        console.log(e.target.dataset);
-        console.log(e.target.dataset.rel);
+        console.log('promptAddField');
+
         this.isRel = 'true' === e.target.dataset.rel;
 
-        // this.sObjectType = e.target.related.name;
-
-        console.log(this.sObjectType);
+        if(e.target.dataset.sobject) {
+            this.sobjectName = e.target.dataset.sobject;
+        } else {
+            this.sobjectName = 'Account';
+        }
 
         this.isModalOpen = true;
     }
@@ -92,14 +93,13 @@ export default class FilterAccounts extends LightningElement {
 
     modalSubmitted(e) {
         console.log('modalSubmitted');
-        // console.log(e.detail.fieldType);
-        // console.log(e.detail.picklistValues);
 
         if(e.detail.isRelation) {
             console.log(JSON.stringify(this.relatedConfig));
 
             if (this.relatedConfig.find(_ => _.name === e.detail.sobjectName)) {
-                this.relatedConfig.find(_ => _.name === e.detail.sobjectName).fields.push({label: e.detail.filterField, isText: 'true', isCheckbox: false, isPicklist: false});
+                this.relatedConfig.find(_ => _.name === e.detail.sobjectName)
+                  .fields.push({label: e.detail.filterField, isText: 'true', isCheckbox: false, isPicklist: false});
             } else {
                 this.relatedConfig.push({name: e.detail.sobjectName, lookup: e.detail.relatedField,
                     fields: [{label: e.detail.filterField, isText: 'true', isCheckbox: false, isPicklist: false}]});
@@ -107,26 +107,30 @@ export default class FilterAccounts extends LightningElement {
             console.log(JSON.stringify(this.relatedConfig));
 
         } else {
-            // this.mainFields = this.mainFields + ',' + e.detail.filterField;
-            // let field = {label: e.detail.filterField};
-            console.log('detail.type');
-            console.log(e.detail.fieldType);
             if (e.detail.fieldType === 'BOOLEAN') {
-                this.mainFields.push({label: e.detail.filterField, isText: false, isCheckbox: true, isPicklist: false});
+                if (this.sobjectName === 'Account') {
+                    this.mainFields.push({label: e.detail.filterField, isText: false, isCheckbox: true, isPicklist: false});
+                } else {
+                    this.relatedConfig.find(_ => _.name === this.sobjectName)
+                      .fields.push({label: e.detail.filterField, isText: false, isCheckbox: true, isPicklist: false});
+                }
             } else if (e.detail.fieldType === 'PICKLIST') {
                 let plv = [];
                 e.detail.picklistValues.forEach( a => plv.push({label: a.toString(), value: a.toString()}))
-                console.log('plv');
-                console.log(plv);
-                this.mainFields.push({label: e.detail.filterField, isText: false, isCheckbox: false, isPicklist: true, picklistValues: plv});
+                if (this.sobjectName === 'Account') {
+                    this.mainFields.push({label: e.detail.filterField, isText: false, isCheckbox: false, isPicklist: true, picklistValues: plv});
+                } else {
+                    this.relatedConfig.find(_ => _.name === this.sobjectName)
+                      .fields.push({label: e.detail.filterField, isText: false, isCheckbox: false, isPicklist: true, picklistValues: plv});
+                }
             } else {
-                this.mainFields.push({label: e.detail.filterField, isText: true, isCheckbox: false, isPicklist: false});
+                if (this.sobjectName === 'Account') {
+                    this.mainFields.push({label: e.detail.filterField, isText: true, isCheckbox: false, isPicklist: false});
+                } else {
+                    this.relatedConfig.find(_ => _.name === this.sobjectName)
+                      .fields.push({label: e.detail.filterField, isText: true, isCheckbox: false, isPicklist: false});
+                }
             }
-            console.log('mainfields');
-            console.log(this.mainFields);
-            // this.mainFields.push(field);
-            // this.mainFields.push({label: e.detail.filterField, type: 'checkbox'});
-
         }
     }
 }
